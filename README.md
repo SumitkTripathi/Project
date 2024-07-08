@@ -1,2 +1,2 @@
-# Project
+# Movie Recommender System
 Description
