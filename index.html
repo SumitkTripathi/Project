@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="Static/CSS/Style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+    <title>Car Price</title>
+  </head>
+  <body class="bg-dark">
+
+    <div class="container">
+        <div class="row">
+            <div class="card mt-50" style="width: 100%; height: 100%;">
+                <div class="card-header">
+                    <div class="col-12" style="text-align: center;">
+                        <h1>Car Price Predictor</h1>
+                    </div>
+
+                </div>
+                <div class="card-body">
+                    <form method="post" accept-charset="utf-8">
+
+                        <div class="col-10 form-group" style = "text-align: centre;">
+                            <label><b>Select Company:</b></label>
+                            <select class="selectpicker form-control" id="company" name="company" required="1" onchange="load_model(this.id,'car_model')">
+
+                                {% for i in companies_list %}
+
+                                    <option value="{{ i }}">{{ i }}</option>
+                                {% endfor %}
+
+                            </select>
+                        </div> 
+
+                        <div class="col-10 form-group" style = "text-align: centre;">
+                            <label><b>Select Model:</b></label>
+                            <select class="selectpicker form-control" id="car_model" name="car_model" required="1">
+                               
+                            </select>
+                        </div> 
+
+                        <div class="col-10 form-group" style = "text-align: centre;">
+                            <label><b>Select year of Purchase:</b></label>
+                            <select class="selectpicker form-control" id="year" name="year" required="1">
+                                {% for j in years %}
+
+                                    <option value="{{j}}">{{j}}</option>
+                                {% endfor %}
+                            </select>
+                        </div> 
+
+                        <div class="col-10 form-group" style = "text-align: centre;">
+                            <label><b>Select Fuel_Type:</b></label>
+                            <select class="selectpicker form-control" id="fuel_type" name="fuel_type" required="1">
+                                {% for n in fuel_types %}
+
+                                    <option value="{{n}}">{{n}}</option>
+                                {% endfor %}
+                            </select>
+                        </div> 
+
+                        <div class="col-10 form-group" style = "text-align: centre;">
+                            <label><b>Enter Kms Travelled:</b></label>
+                            <input class="form-control" type="text" id="kilometer" name="kilometer" placeholder="Enter Km driven">
+                        </div> 
+                        <div class="col-10 form-group" style="text-align: centre;">
+                            <button class="btn btn-primary form-control" onclick="send_data()">Predict Price</button>
+                        </div>
+                    </form>
+                    <br> 
+                    <div class="row">
+                        <div class="col-12" style="text-align: center;">
+                            <h3><span id="prediction"></span></h3>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function load_model(company_id,car_model_id)
+
+        {
+            var company = document.getElementById(company_id);
+            var car_mod = document.getElementById(car_model_id);
+
+            car_mod.value = "";
+            car_mod.innerHTML = "";
+
+            {% for k in companies_list  %}
+                if (company.value == "{{k}}")
+                {
+                    {% for l in car_models_list %}
+
+                        {% if k in l %}
+
+                            var newOption = document.createElement("option");
+                            newOption.value = "{{l}}";
+                            newOption.innerHTML = "{{l}}";
+                            car_mod.options.add(newOption); 
+                        {% endif %}
+
+                    {% endfor %}
+                }
+
+            {% endfor %}
+        }
+
+        function form_handler(event)
+        {
+            event.preventDefault();
+        }
+        function send_data()
+        {
+            document.querySelector('form').addEventListener('submit',form_handler);
+            var fd = new FormData(document.querySelector('form'));
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST','/predict',true);
+            document.getElementById("prediction").innerHTML="Wait for prediction..";
+
+            xhr.onreadystatechange = function()
+            {
+                if (xhr.readyState == XMLHttpRequest.DONE)
+            {
+                document.getElementById("prediction").innerHTML = "Prediction: " + xhr.responseText;
+            }
+                    
+            }
+            xhr.onload=function(){};
+            xhr.send(fd);
+        }
+
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+  </body>
+</html>
